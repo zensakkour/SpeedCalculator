@@ -90,4 +90,4 @@ The Kalman filter works through two main steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/speedy.git
+   git clone https://github.com/zensakkour/speedy.git
