@@ -7,6 +7,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlin.math.*
@@ -15,14 +16,24 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     private lateinit var locationManager: LocationManager
     private lateinit var speedTextView: TextView
+    private lateinit var maxSpeedTextView: TextView
+    private lateinit var avgSpeedTextView: TextView
     private var previousLocation: Location? = null
     private var kalmanFilter: KalmanFilter = KalmanFilter()
+    private var lastSpeed = 0.0  // Variable for low-pass filter
+    private val alpha = 0.1 // Smoothing factor for low-pass filter
+    private var totalSpeed = 0.0
+    private var speedCount = 0
+    private var maxSpeed = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         speedTextView = findViewById(R.id.speedTextView)
+        maxSpeedTextView = findViewById(R.id.maxSpeedTextView)
+        avgSpeedTextView = findViewById(R.id.avgSpeedTextView)
+
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         if (ActivityCompat.checkSelfPermission(
@@ -43,8 +54,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private fun startLocationUpdates() {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
-            100, // Update interval (ms)
-            0.5f, // Minimum distance change (meters)
+            50,  // Update interval (ms)
+            0.1f,   // Minimum distance change (meters)
             this
         )
     }
@@ -57,11 +68,25 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 location.latitude,
                 location.longitude
             )
-            val timeDelta = (location.time - previousLocation!!.time) / 100.0 // in seconds
+            val timeDelta = (location.time - previousLocation!!.time) / 1000.0 // in seconds
             if (timeDelta > 0) {
                 val rawSpeed = (distance / timeDelta) * 3.6 // Convert m/s to km/h
                 val filteredSpeed = kalmanFilter.filter(rawSpeed)
-                speedTextView.text = String.format("Speed: %.2f km/h", filteredSpeed)
+                val smoothedSpeed = lowPassFilter(filteredSpeed)
+
+                // Update max speed
+                if (smoothedSpeed > maxSpeed) {
+                    maxSpeed = smoothedSpeed
+                }
+
+                // Update average speed
+                totalSpeed += smoothedSpeed
+                speedCount++
+
+                // Display current, max, and avg speeds
+                speedTextView.text = String.format("Speed: %.2f km/h", smoothedSpeed)
+                maxSpeedTextView.text = String.format("Max Speed: %.2f km/h", maxSpeed)
+                avgSpeedTextView.text = String.format("Avg Speed: %.2f km/h", totalSpeed / speedCount)
             }
         }
         previousLocation = location
@@ -76,6 +101,11 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 sin(dLon / 2) * sin(dLon / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         return R * c
+    }
+
+    private fun lowPassFilter(currentSpeed: Double): Double {
+        lastSpeed = alpha * currentSpeed + (1 - alpha) * lastSpeed
+        return lastSpeed
     }
 
     override fun onRequestPermissionsResult(
