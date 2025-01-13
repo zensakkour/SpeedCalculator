@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private fun startLocationUpdates() {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
-            50,  // Update interval (ms)
-            0.1f,   // Minimum distance change (meters)
+            2,  // Update interval (ms)
+            0.05f,   // Minimum distance change (meters)
             this
         )
     }
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 location.latitude,
                 location.longitude
             )
-            val timeDelta = (location.time - previousLocation!!.time) / 1000.0 // in seconds
+            val timeDelta = (location.time - previousLocation!!.time) / 2.0 // in seconds
             if (timeDelta > 0) {
                 val rawSpeed = (distance / timeDelta) * 3.6 // Convert m/s to km/h
                 val filteredSpeed = kalmanFilter.filter(rawSpeed)
