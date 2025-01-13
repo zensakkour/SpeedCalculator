@@ -27,23 +27,23 @@ To calculate the distance between two geographical points (based on latitude and
 
 The Haversine formula is:
 
-*\[
+$$
 d = 2r \times \text{asin} \left( \sqrt{\sin^2 \left( \frac{\Delta \phi}{2} \right) + \cos \phi_1 \times \cos \phi_2 \times \sin^2 \left( \frac{\Delta \lambda}{2} \right)} \right)
-\]
+$$
 
 Where:
-- \(d\) is the distance between two points on the surface of a sphere (in meters).
-- \(r\) is the radius of the Earth (6371000 meters).
-- \(\phi_1\) and \(\phi_2\) are the latitudes of the two points (in radians).
-- \(\Delta \phi\) is the difference in latitudes.
-- \(\Delta \lambda\) is the difference in longitudes.
+- $d$ is the distance between two points on the surface of a sphere (in meters).
+- $r$ is the radius of the Earth (6371000 meters).
+- $\phi_1$ and $\phi_2$ are the latitudes of the two points (in radians).
+- $\Delta \phi$ is the difference in latitudes.
+- $\Delta \lambda$ is the difference in longitudes.
 
 ### **3. Speed Calculation**
 Once the distance between two consecutive GPS points is calculated using the Haversine formula, the app calculates the **speed** using the formula:
 
-\[
+$$
 \text{speed} = \frac{\text{distance}}{\text{time}}
-\]
+$$
 
 Where:
 - **Distance** is the distance between the two GPS points (calculated using the Haversine formula).
@@ -51,9 +51,9 @@ Where:
 
 To convert the speed from meters per second (m/s) to kilometers per hour (km/h), we multiply by a factor of 3.6:
 
-\[
+$$
 \text{speed (km/h)} = \text{speed (m/s)} \times 3.6
-\]
+$$
 
 ### **4. Kalman Filter**
 GPS speed data is often noisy due to various environmental factors (e.g., signal bounce, interference). To smooth the speed readings, the app applies a **Kalman filter**.
