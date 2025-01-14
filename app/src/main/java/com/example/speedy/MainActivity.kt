@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
             2,  // Update interval (ms)
-            0.05f,   // Minimum distance change (meters)
+            0.0005f,   // Minimum distance change (meters)
             this
         )
     }
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 location.latitude,
                 location.longitude
             )
-            val timeDelta = (location.time - previousLocation!!.time) / 2.0 // in seconds
+            val timeDelta = (location.time - previousLocation!!.time) / 0.02 // in seconds
             if (timeDelta > 0) {
                 val rawSpeed = (distance / timeDelta) * 3.6 // Convert m/s to km/h
                 val filteredSpeed = kalmanFilter.filter(rawSpeed)
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 speedCount++
 
                 // Display current, max, and avg speeds
-                speedTextView.text = String.format("Speed: %.2f km/h", smoothedSpeed)
+                speedTextView.text = String.format("Speed: %.4f km/h", smoothedSpeed)
                 maxSpeedTextView.text = String.format("Max Speed: %.2f km/h", maxSpeed)
                 avgSpeedTextView.text = String.format("Avg Speed: %.2f km/h", totalSpeed / speedCount)
             }
@@ -93,14 +93,14 @@ class MainActivity : AppCompatActivity(), LocationListener {
     }
 
     private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val R = 6371000.0 // Earth radius in meters
+        val r = 6371000.0 // Earth radius in meters
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
         val a = sin(dLat / 2) * sin(dLat / 2) +
                 cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
                 sin(dLon / 2) * sin(dLon / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        return R * c
+        return r * c
     }
 
     private fun lowPassFilter(currentSpeed: Double): Double {
