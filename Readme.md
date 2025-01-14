@@ -74,6 +74,7 @@ The Kalman filter works through two main steps:
   - Calculating distance and speed.
   - Applying the Kalman filter to smooth the speed readings.
   - Displaying the speed on the user interface.
+  -
 
 ### **2. KalmanFilter.kt**
 - A class implementing the Kalman filter algorithm to smooth the calculated speed values.
