@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private var previousLocation: Location? = null
     private var kalmanFilter: KalmanFilter = KalmanFilter()
     private var lastSpeed = 0.0  // Variable for low-pass filter
-    private val alpha = 0.01 // Smoothing factor for low-pass filter
+    private val alpha = 0.9 // Smoothing factor for low-pass filter
     private var totalSpeed = 0.0
     private var speedCount = 0
     private var maxSpeed = 0.0
